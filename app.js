@@ -1,64 +1,167 @@
-const Koa = require('koa');
-const KoaRouter = require('koa-router');
-const json = require('koa-json');
-const path = require('path');
-const render = require('koa-ejs');
-const bodyParser = require('koa-bodyparser');
+const path = require('path')
+const express = require('express')
+const hbs = require('hbs')
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
 
-const app = new Koa();
-const router = new KoaRouter();
+const app = express()
 
-app.use(json());
-app.use(bodyParser());
+//DEFINE THE PATHS FOR EXPRESS CONFIG
+const publicDirectoryPath =path.join (__dirname, '../public')
+const viewsPath =path.join (__dirname, '../templates/views')
+const partialsPath =path.join (__dirname, '../templates/partials')
 
-//Array to store hard coded data for an example
-const places =['The Point', 'Market Square', 'Point Park University'];
+//SETUP HANDLEBARS ENGINE AND VIEWS LOCATION
+app.set('view engine', 'hbs')
+app.set('views', viewsPath)
+hbs,registerPartials(partialsPath)
 
-//app.use(async ctx => (ctx.body ={ msg:'Lets Go Pens'}));
+//setup static directory
+app.use(express.static(publicDirectoryPath))
 
-render(app, {
-  root: path.join(__dirname, 'views'),
-  layout: 'layout',
-  viewExt: 'html',
-  cache: false,
-  debug: false
-});
+app.get('',(req, res)=> {
+  res.render('index'), {
+    title: 'Weather',
+    name: 'Monica'
+  }
 
-//routes
-router.get('/', index);
-router.get('/Add', showAdd);
-router.post('/add', add);
+app.listen(3000, () =>{
+  console.log('Server is up and running on port 3000 at PPU')
+})
 
-//List of items
-async function index(ctx) {
-  await ctx.render('index', {
-    title: 'Cool places in Pittsburgh',
-    things: places
-  });
-}
 
-/*
-  router.get('/', async ctx => {
-  await ctx.render('index', {
-    title:'Cool places on campus',
-    things: places
-  });
-});
-*/
+//Homework Assignment
+//Create a Route for Support
+const path = require('path')
+const express = require('express')
+const hbs = require('hbs')
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
 
-//Show Add function
-async function showAdd(ctx) {
-  await ctx.render('add');
-}
+const app = express()
 
-async function add(ctx) {
-  const body = ctx.request.body;
-  things.push(body.thing);
-  ctx.redirect('/');
-}
+//DEFINE THE PATHS FOR EXPRESS CONFIG
+const publicDirectoryPath =path.join (__dirname, '../public')
+const viewsPath =path.join (__dirname, '../templates/views')
+const partialsPath =path.join (__dirname, '../templates/partials')
 
-router.get('/pittsburgh', ctx => (ctx.body = 'Lets Go Beechview'));
+//SETUP HANDLEBARS ENGINE AND VIEWS LOCATION
+app.set('view engine', 'hbs')
+app.set('views', viewsPath)
+hbs,registerPartials(partialsPath)
 
-app.use(router.routes()).use(router.allowedMethods());
+//setup static directory
+app.use(express.static(publicDirectoryPath))
 
-app.listen(3000, () => console.log('Server started...'));
+app.get('',(req, res)=> {
+  res.render('index', {
+    title: 'SUPPORT',
+    description: 'Please contact me if needed any help'
+  })
+})
+
+app.listen(3000, () =>{
+  console.log('Server is up and running on port 3000 at PPU')
+})
+//Create a route for About
+const path = require('path')
+const express = require('express')
+const hbs = require('hbs')
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
+
+const app = express()
+
+//DEFINE THE PATHS FOR EXPRESS CONFIG
+const publicDirectoryPath =path.join (__dirname, '../public')
+const viewsPath =path.join (__dirname, '../templates/views')
+const partialsPath =path.join (__dirname, '../templates/partials')
+
+//SETUP HANDLEBARS ENGINE AND VIEWS LOCATION
+app.set('view engine', 'hbs')
+app.set('views', viewsPath)
+hbs,registerPartials(partialsPath)
+
+//setup static directory
+app.use(express.static(publicDirectoryPath))
+
+app.get('',(req, res)=> {
+  res.render('index', {
+    title: 'ABOUT'
+    description: 'WELCOME TO MY WEATHER APP! ENJOY!'
+  })
+})
+
+app.listen(3000, () =>{
+  console.log('Server is up and running on port 3000 at PPU')
+})
+
+//404 ROUTE
+const path = require('path')
+const express = require('express')
+const hbs = require('hbs')
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
+
+const app = express()
+
+//DEFINE THE PATHS FOR EXPRESS CONFIG
+const publicDirectoryPath =path.join (__dirname, '../public')
+const viewsPath =path.join (__dirname, '../templates/views')
+const partialsPath =path.join (__dirname, '../templates/partials')
+
+//SETUP HANDLEBARS ENGINE AND VIEWS LOCATION
+app.set('view engine', 'hbs')
+app.set('views', viewsPath)
+hbs,registerPartials(partialsPath)
+
+//setup static directory
+app.use(express.static(publicDirectoryPath))
+
+app.get('',(req, res)=> {
+  res.render('index', {
+    title: '404'
+    description: 'ERROR'
+  })
+})
+
+//Weather ROUTE
+app.get('/weather', (req, res) =>{
+  if(!req.query.address){
+    error:'You must provide an address'
+    })
+  }
+  geocode(req.query.address, (error, {latitude, longitude, location}) =>{
+    if(error){
+      return res.send({error})
+    }
+
+    forecast(latitude, longitude, (error, forecastData) => {
+      if (error) {
+        return res.send({ error })
+      }
+
+      res.send({
+         forecast: forecastData,
+         location
+      })
+    }
+  }
+})
+
+// Products ROUTE
+app.get('/products', (req, res) => {
+  if(!req.query.search)
+  return res.send({
+    error: 'You must provide a search Query'
+  })
+
+  console.log(req.query.search)
+  res.send({
+    products:[]
+  })
+})
+
+app.listen(3000, () =>{
+  console.log('Server is up and running on port 3000 at PPU')
+})
